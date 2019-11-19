@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-node-service
+  labels:
+    app: simple-node
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: simple-node
+  type: LoadBalancer
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: simple-node-deployment
+spec:
+  selector:
+    matchLabels:
+      app: simple-node
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: simple-node  
+    spec:                       
+      containers: 
+      - name: simple-node  
+        image: opeo/simple-node:1.0
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginxsvc
+  labels:
+    app: nginx
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    protocol: TCP
+    name: https
+  selector:
+    app: nginx
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: my-nginx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: nginxsecret
+      - name: configmap-volume
+        configMap:
+          name: nginxconfigmap
+      containers:
+      - name: nginxhttps
+        image: opeo/nginxhttps:1.0
+        command: ["/home/auto-reload-nginx.sh"]
+        ports:
+        - containerPort: 443
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx/ssl
+          name: secret-volume
+        - mountPath: /etc/nginx/conf.d
+          name: configmap-volume
