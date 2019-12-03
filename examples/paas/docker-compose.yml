@@ -1,0 +1,22 @@
+version: "2"
+services:
+  # The Application
+  app:
+    build:
+      context: ./app
+    volumes:
+      - ./:/var/www/paas
+    environment:
+      - "PORT=3000"
+    ports:
+      - 3000:3000
+
+  # The Paas 
+  sidecar:
+    build:
+      context: ./sidecar
+    command: ["/var/www/paas/sidecar/auto-deploy.sh"]
+    volumes_from:
+      - app
+    environment:
+      - "SHARED_DIR=/var/www/paas"

@@ -39,3 +39,8 @@ simple-node-service   LoadBalancer   10.105.184.50   <pending>     3000:32595/TC
 ```
 
 Then finally, run `minikube service nginxsvc` which will open both the HTTP (80) and HTTPS (443) versions in your browser.
+
+# TODO:
+1. Parameterize the sidecar for re-usability. The params should be:
+    - [x] The certificate names (env variable)
+    - [ ] Legacy app URL (env variable)
