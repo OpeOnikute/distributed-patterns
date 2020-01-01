@@ -1,0 +1,39 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web 
+    spec:                       
+      containers: 
+      - name: web-deployment  
+        image: opeo/simple-node:1.0
+        ports:
+        - containerPort: 3000
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: experiment
+spec:
+  selector:
+    matchLabels:
+      app: experiment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: experiment 
+    spec:                       
+      containers: 
+      - name: experiment-deployment  
+        image: opeo/simple-node:1.0
+        ports:
+        - containerPort: 3000
